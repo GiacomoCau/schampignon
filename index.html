@@ -17,372 +17,381 @@
                                ($push-sub-cont k #t))))
                       3
                       4))))))
+                      
 </pre>
-  <form id="evalform"
-        onsubmit="try{return do_eval(scm_parse(document.forms.evalform.input.value));}finally{return false;}">
-    <input type="text" name="input">
-    <input type="submit" value="eval">
-  </form>
-  <div id="output">
-  </div>
-  <script type="text/javascript">
-var ground_env = scm_make_env();
-scm_update(ground_env, "$sequence", new Scm_sequence());
-scm_update(ground_env, "$define!", new Scm_define());
-scm_update(ground_env, "$vau", new Scm_vau());
-scm_update(ground_env, "$if", new Scm_if());
-scm_update(ground_env, "eval", scm_wrap(new Scm_eval()));
-scm_update(ground_env, "call/cc", scm_wrap(new Scm_callcc()));
-scm_update(ground_env, "wrap", scm_make_native(scm_wrap));
-scm_update(ground_env, "unwrap", scm_make_native(scm_unwrap));
-scm_update(ground_env, "null?", scm_make_native(scm_is_nil));
-scm_update(ground_env, "car", scm_make_native(scm_car));
-scm_update(ground_env, "cdr", scm_make_native(scm_cdr));
-scm_update(ground_env, "cons", scm_make_native(scm_cons));
-scm_update(ground_env, "make-environment", scm_make_native(scm_make_env));
-scm_update(ground_env, "#t", true);
-scm_update(ground_env, "#f", false);
-scm_update(ground_env, "#ignore", scm_ignore);
-scm_update(ground_env, "#inert", scm_inert);
-scm_update(ground_env, "eq?", scm_make_native(scm_eq));
-
-scm_update(ground_env, "+", scm_make_native(scm_plus));
-scm_update(ground_env, "error", scm_make_native(scm_error));
-scm_update(ground_env, "print", scm_make_native(do_print));
-
-scm_update(ground_env, "make-vtable", scm_make_native(scm_make_vtable));
-scm_update(ground_env, "make-instance", scm_make_native(scm_make_instance));
-scm_update(ground_env, "bind-method!", scm_make_native(scm_bind_method));
-scm_update(ground_env, "lookup-method", scm_make_native(scm_lookup_method));
-scm_update(ground_env, "set-slot!", scm_make_native(scm_set_slot));
-scm_update(ground_env, "get-slot", scm_make_native(scm_get_slot));
-
-var vm = new Scm_vm(scm_make_env(ground_env));
-
-function do_onload()
-{
-  var start_time = new Date().getTime();
-  var forms = scm_parse(document.getElementById("thecode").textContent);
-  var parse_time = new Date().getTime();
-  do_print("Parsed prelude (" + (parse_time - start_time) + " ms)");
-  do_eval(forms);
-  return false;
-}
-
-function do_eval(forms)
-{
-  do_print("> " + document.forms.evalform.input.value);
-  var start_time = new Date().getTime();
-  vm.stat_insns = 0;
-  for (var i = 0; i < forms.length; i++) {
-    var form = forms[i];
-    var result;
-    try {
-      result = scm_eval(vm, form);
-    } catch(e) {
-      result = "ERROR: " + e;
-    }
-    do_print(result);
-  }
-  var eval_time = new Date().getTime();
-  var eval_duration = (eval_time - start_time);
-  var ipms = vm.stat_insns / eval_duration;
-  var ips = ipms * 1000;
-  var ips = ipms * 1000;
-  var mhz = ips / 1000000;
-  do_print("(" + eval_duration + " ms, " + vm.stat_insns + " insns, " + mhz.toFixed(3) + " MHz)");
-  return false;
-}
-
-function do_print(string)
-{
-    var resultDiv = document.createElement("div");
-    resultDiv.appendChild(document.createTextNode(string));
-    var output = document.getElementById("output");
-    output.insertBefore(resultDiv, output.firstChild);
-    document.forms.evalform.input.value = "";
-    return false;
-}
-  </script>
+<form id="evalform"
+	onsubmit="try{ do_eval(scm_parse(evalform.input.value)); } finally {return false;}">
+  <textarea name="input" rows="1" cols="70" onkeydown="if (event.keyCode == 13) { event.preventDefault(); form.onsubmit(); }"></textarea>
+  <br><input type="submit" value="eval">
+</form>
+<div id="output">
+</div>
+<script type="text/javascript">
+	var ground_env = scm_make_env();
+	scm_update(ground_env, "$sequence", new Scm_sequence());
+	scm_update(ground_env, "$define!", new Scm_define());
+	scm_update(ground_env, "$vau", new Scm_vau());
+	scm_update(ground_env, "$if", new Scm_if());
+	scm_update(ground_env, "eval", scm_wrap(new Scm_eval()));
+	scm_update(ground_env, "call/cc", scm_wrap(new Scm_callcc()));
+	scm_update(ground_env, "wrap", scm_make_native(scm_wrap));
+	scm_update(ground_env, "unwrap", scm_make_native(scm_unwrap));
+	scm_update(ground_env, "null?", scm_make_native(scm_is_nil));
+	scm_update(ground_env, "car", scm_make_native(scm_car));
+	scm_update(ground_env, "cdr", scm_make_native(scm_cdr));
+	scm_update(ground_env, "cons", scm_make_native(scm_cons));
+	scm_update(ground_env, "make-environment", scm_make_native(scm_make_env));
+	scm_update(ground_env, "#t", true);
+	scm_update(ground_env, "#f", false);
+	scm_update(ground_env, "#ignore", scm_ignore);
+	scm_update(ground_env, "#inert", scm_inert);
+	scm_update(ground_env, "eq?", scm_make_native(scm_eq));
+	
+	scm_update(ground_env, "+", scm_make_native(scm_plus));
+	scm_update(ground_env, "*", scm_make_native(scm_mult));
+	scm_update(ground_env, "error", scm_make_native(scm_error));
+	scm_update(ground_env, "print", scm_make_native(do_print));
+	
+	scm_update(ground_env, "make-vtable", scm_make_native(scm_make_vtable));
+	scm_update(ground_env, "make-instance", scm_make_native(scm_make_instance));
+	scm_update(ground_env, "bind-method!", scm_make_native(scm_bind_method));
+	scm_update(ground_env, "lookup-method", scm_make_native(scm_lookup_method));
+	scm_update(ground_env, "set-slot!", scm_make_native(scm_set_slot));
+	scm_update(ground_env, "get-slot", scm_make_native(scm_get_slot));
+	
+	var vm = new Scm_vm(scm_make_env(ground_env));
+	
+	function do_onload() {
+	  var start_time = new Date().getTime();
+	  var forms = scm_parse(thecode.textContent);
+	  var time = new Date().getTime() - start_time;
+	  do_print("> Parse Prelude (" + time + " ms)");
+	  var start_time = new Date().getTime();
+	  do_eval(forms, true);
+	  var time = new Date().getTime() - start_time;
+	  do_print("> Eval Prelude (" + time + " ms)");
+	  return false;
+	}
+	
+	function do_eval(forms, silent) {
+	  for (var i = 0; i < forms.length; i++) {
+		  var exp = forms[i]
+	      var start_time = new Date().getTime();
+	      vm.stat_insns = 0;
+		  try {
+			var value = scm_eval(vm, exp);
+			evalform.input.value = ""
+		  }
+		  catch(e) {
+		  	var value = "ERROR: " + e;
+		  }
+		  if (silent) continue
+	      var eval_duration = new Date().getTime() - start_time + 1;
+	      var mhz = vm.stat_insns / eval_duration / 1000;
+	      do_print("> " + toString(exp) + "<br>" + toString(value) + "<br>(" + eval_duration + " ms, " + vm.stat_insns + " insns, " + mhz.toFixed(3) + " MHz)<br>&nbsp;");
+	  }
+	  return false;
+	}
+	
+	function do_print(string) {
+	    var div = document.createElement("div");
+	    div.innerHTML = string  
+	    output.insertBefore(div, output.firstChild);
+	    return false;
+	}
+	
+	function toString(o) {
+		if (o === null) return "()"
+		if (o instanceof Array) return "(" + consToString(o) + ")"
+		return o
+		function consToString(c) {
+			if (c[1] == null) return toString(c[0])
+			if (c[1] instanceof Array) return toString(c[0]) + " " + consToString(c[1])
+			return toString(c[0]) + " . " + toString(c[1])
+		}
+	}
+</script>
 
 <h2>Prelude</h2>
 <pre id="thecode">
-($define! comment ($vau #ignore #ignore #inert))
-
-
-(comment from kernel report)
-
-($define! list (wrap ($vau x #ignore x)))
-
-($define! list*
-   (wrap ($vau args #ignore
-            ($sequence
-               ($define! aux
-                  (wrap ($vau ((head . tail)) #ignore
-                           ($if (null? tail)
-                                head
-                                (cons head (aux tail))))))
-               (aux args)))))
-
-($define! $vau
-   ((wrap ($vau ($vau) #ignore
-             ($vau (formals eformal . body) env
-                (eval (list $vau formals eformal
-                           (cons $sequence body))
-                      env))))
-      $vau))
-
-($define! $lambda
-   ($vau (formals . body) env
-      (wrap (eval (list* $vau formals #ignore body)
-                  env))))
-
-($define! car ($lambda ((x . #ignore)) x))
-($define! cdr ($lambda ((#ignore . x)) x))
-
-($define! caar ($lambda (((x . #ignore) . #ignore)) x))
-($define! cdar ($lambda (((#ignore . x) . #ignore)) x))
-($define! cadr ($lambda ((#ignore . (x . #ignore))) x))
-($define! cddr ($lambda ((#ignore . (#ignore . x))) x))
-
-($define! caaar ($lambda ((((x . #ignore) . #ignore) . #ignore)) x))
-($define! cdaar ($lambda ((((#ignore . x) . #ignore) . #ignore)) x))
-($define! cadar ($lambda (((#ignore . (x . #ignore)) . #ignore)) x))
-($define! cddar ($lambda (((#ignore . (#ignore . x)) . #ignore)) x))
-($define! caadr ($lambda ((#ignore . ((x . #ignore) . #ignore))) x))
-($define! cdadr ($lambda ((#ignore . ((#ignore . x) . #ignore))) x))
-($define! caddr ($lambda ((#ignore . (#ignore . (x . #ignore)))) x))
-($define! cdddr ($lambda ((#ignore . (#ignore . (#ignore . x)))) x))
-
-($define! caaaar ($lambda (((((x . #ignore) . #ignore) . #ignore). #ignore))x))
-($define! cdaaar ($lambda (((((#ignore . x) . #ignore) . #ignore). #ignore))x))
-($define! cadaar ($lambda ((((#ignore . (x . #ignore)) . #ignore). #ignore))x))
-($define! cddaar ($lambda ((((#ignore . (#ignore . x)) . #ignore). #ignore))x))
-($define! caadar ($lambda (((#ignore . ((x . #ignore) . #ignore)). #ignore))x))
-($define! cdadar ($lambda (((#ignore . ((#ignore . x) . #ignore)). #ignore))x))
-($define! caddar ($lambda (((#ignore . (#ignore . (x . #ignore))). #ignore))x))
-($define! cdddar ($lambda (((#ignore . (#ignore . (#ignore . x))). #ignore))x))
-($define! caaadr ($lambda ((#ignore .(((x . #ignore) . #ignore) . #ignore)))x))
-($define! cdaadr ($lambda ((#ignore .(((#ignore . x) . #ignore) . #ignore)))x))
-($define! cadadr ($lambda ((#ignore .((#ignore . (x . #ignore)) . #ignore)))x))
-($define! cddadr ($lambda ((#ignore .((#ignore . (#ignore . x)) . #ignore)))x))
-($define! caaddr ($lambda ((#ignore .(#ignore . ((x . #ignore) . #ignore))))x))
-($define! cdaddr ($lambda ((#ignore .(#ignore . ((#ignore . x) . #ignore))))x))
-($define! cadddr ($lambda ((#ignore .(#ignore . (#ignore . (x . #ignore)))))x))
-($define! cddddr ($lambda ((#ignore .(#ignore . (#ignore . (#ignore . x)))))x))
-
-($define! apply
-   ($lambda (appv arg . opt)
-      (eval (cons (unwrap appv) arg)
-            ($if (null? opt)
-                 (make-environment)
-                 (car opt)))))
-
-($define! $cond
-   ($vau clauses env
-
-      ($define! aux
-         ($lambda ((test . body) . clauses)
-            ($if (eval test env)
-                 (apply (wrap $sequence) body env)
-                 (apply (wrap $cond) clauses env))))
-
-      ($if (null? clauses)
-           #inert
-           (apply aux clauses))))
-
-($define! $let
-   ($vau (bindings . body) env
-      (eval (cons (list* $lambda (map car bindings) body)
-                  (map cadr bindings))
-            env)))
-
-($define! $set!
-   ($vau (exp1 formals exp2) env
-      (eval (list $define! formals
-                  (list (unwrap eval) exp2 env))
-            (eval exp1 env))))
-
-($define! $provide!
-   ($vau (symbols . body) env
-      (eval (list $define! symbols
-               (list $let ()
-                  (list* $sequence body)
-                  (list* list symbols)))
-            env)))
-
-($define! get-current-environment (wrap ($vau () e e)))
-
-($define! $let/cc
-   ($vau (symbol . body) env
-      (eval (list call/cc (list* $lambda (list symbol) body))
-            env)))
-
-
-(comment not from kernel report)
-
-($define! $quote ($vau (x) #ignore x))
-
-($define! map
-   ($lambda (fun lst)
-      ($if (null? lst)
-           ()
-           (cons (fun (car lst)) (map fun (cdr lst))))))
-
-($define! send-message
-   ($lambda (obj message . args)
-      ($let ((method (lookup-method obj message)))
-         (apply method (cons obj args)))))
-
-
-(comment delimited control)
-($provide! (make-prompt $push-prompt with-sub-cont $push-sub-cont run-cc)
-
-($define! prompt-vtable (make-vtable))
-
-($define! make-prompt
-   ($lambda () (make-instance prompt-vtable)))
-
-
-($define! $push-prompt
-   ($vau (p . es) env
-      (push-prompt (eval p env)
-         ($lambda () (eval (list* $sequence es) env)))))
-
-($define! $push-sub-cont
-   ($vau (k . es) env
-      (push-sub-cont (eval k env)
-         ($lambda () (eval (list* $sequence es) env)))))
-
-
-($define! abort #inert)
-($define! mk #inert)
-
-($define! local (get-current-environment))
-
-
-($define! push-prompt
-   ($lambda (p th)
-      (call/cc
-         ($lambda (k)
-            ($set! local mk (push-p p (push-seg k mk)))
-            (abort th)))))
-
-($define! with-sub-cont
-   ($lambda (p f)
-      ($let (((subk mk*) (split-seq p mk)))
-         ($set! local mk mk*)
-         (call/cc
-            ($lambda (k)
-               (abort ($lambda () (f (push-seg k subk)))))))))
-
-($define! push-sub-cont
-   ($lambda (subk th)
-      (call/cc
-         ($lambda (k)
-            ($set! local mk (append-seq subk (push-seg k mk)))
-            (abort th)))))
-
-
-($define! run-cc
-   ($lambda (th)
-      ($set! local mk (empty-seq))
-      (underflow ((call/cc
-                     ($lambda (k)
-                        ($set! local abort k)
-                        (abort th)))))))
-
-($define! underflow
-   ($lambda (v)
-      (send-message mk ($quote underflow) v)))
-
-
-(comment implement sequences in terms of object system - ugly)
-
-($define! empty-seq-vtable (make-vtable))
-($define! push-p-vtable (make-vtable))
-($define! push-seg-vtable (make-vtable))
-
-($define! empty-seq
-   ($lambda ()
-      (make-instance empty-seq-vtable)))
-
-(bind-method! empty-seq-vtable ($quote underflow)
-   ($lambda (self v)
-      v))
-
-($define! push-p
-   ($lambda (p mk*)
-      ($let ((inst (make-instance push-p-vtable)))
-         (set-slot! inst ($quote p) p)
-         (set-slot! inst ($quote mk*) mk*)
-         inst)))
-
-(bind-method! push-p-vtable ($quote underflow)
-   ($lambda (self v)
-      ($set! local mk (get-slot self ($quote mk*)))
-      (underflow v)))
-
-($define! push-seg
-   ($lambda (k mk*)
-      ($let ((inst (make-instance push-seg-vtable)))
-         (set-slot! inst ($quote k) k)
-         (set-slot! inst ($quote mk*) mk*)
-         inst)))
-
-(bind-method! push-seg-vtable ($quote underflow)
-   ($lambda (self v)
-      ($set! local mk (get-slot self ($quote mk*)))
-      ((get-slot self ($quote k)) v)))
-
-
-($define! split-seq
-   ($lambda (p mk)
-      (send-message mk ($quote do-split-seq) p)))
-
-(bind-method! empty-seq-vtable ($quote do-split-seq)
-   ($lambda (self p)
-      (error ($quote prompt-not-found))))
-
-(bind-method! push-p-vtable ($quote do-split-seq)
-   ($lambda (self p)
-      ($let ((p# (get-slot self ($quote p)))
-             (sk (get-slot self ($quote mk*))))
-         ($if (eq? p p#)
-              (list (empty-seq) sk)
-              ($let (((subk sk#) (split-seq p sk)))
-                 (list (push-p p# subk) sk#))))))
-
-(bind-method! push-seg-vtable ($quote do-split-seq)
-   ($lambda (self p)
-      ($let ((seg (get-slot self ($quote k)))
-             (sk (get-slot self ($quote mk*))))
-         ($let (((subk sk#) (split-seq p sk)))
-            (list (push-seg seg subk) sk#)))))
-
-
-($define! append-seq
-   ($lambda (mk mk*)
-      (send-message mk ($quote do-append-seq) mk*)))
-
-(bind-method! empty-seq-vtable ($quote do-append-seq)
-   ($lambda (self mk*)
-      mk*))
-
-(bind-method! push-p-vtable ($quote do-append-seq)
-   ($lambda (self mk*)
-      ($let ((p (get-slot self ($quote p)))
-             (sk (get-slot self ($quote mk*))))
-         (push-p p (append-seq sk mk*)))))
-
-(bind-method! push-seg-vtable ($quote do-append-seq)
-   ($lambda (self mk*)
-      ($let ((seg (get-slot self ($quote k)))
-             (sk (get-slot self ($quote mk*))))
-         (push-seg seg (append-seq sk mk*)))))
-
-) (comment end of delimited control)
-
+	($define! comment ($vau #ignore #ignore #inert))
+	
+	
+	(comment from kernel report)
+	
+	($define! list (wrap ($vau x #ignore x)))
+	
+	($define! list*
+	   (wrap ($vau args #ignore
+	            ($sequence
+	               ($define! aux
+	                  (wrap ($vau ((head . tail)) #ignore
+	                           ($if (null? tail)
+	                                head
+	                                (cons head (aux tail))))))
+	               (aux args)))))
+	
+	($define! $vau
+	   ((wrap ($vau ($vau) #ignore
+	             ($vau (formals eformal . body) env
+	                (eval (list $vau formals eformal
+	                           (cons $sequence body))
+	                      env))))
+	      $vau))
+	
+	($define! $lambda
+	   ($vau (formals . body) env
+	      (wrap (eval (list* $vau formals #ignore body)
+	                  env))))
+	
+	($define! car ($lambda ((x . #ignore)) x))
+	($define! cdr ($lambda ((#ignore . x)) x))
+	
+	($define! caar ($lambda (((x . #ignore) . #ignore)) x))
+	($define! cdar ($lambda (((#ignore . x) . #ignore)) x))
+	($define! cadr ($lambda ((#ignore . (x . #ignore))) x))
+	($define! cddr ($lambda ((#ignore . (#ignore . x))) x))
+	
+	($define! caaar ($lambda ((((x . #ignore) . #ignore) . #ignore)) x))
+	($define! cdaar ($lambda ((((#ignore . x) . #ignore) . #ignore)) x))
+	($define! cadar ($lambda (((#ignore . (x . #ignore)) . #ignore)) x))
+	($define! cddar ($lambda (((#ignore . (#ignore . x)) . #ignore)) x))
+	($define! caadr ($lambda ((#ignore . ((x . #ignore) . #ignore))) x))
+	($define! cdadr ($lambda ((#ignore . ((#ignore . x) . #ignore))) x))
+	($define! caddr ($lambda ((#ignore . (#ignore . (x . #ignore)))) x))
+	($define! cdddr ($lambda ((#ignore . (#ignore . (#ignore . x)))) x))
+	
+	($define! caaaar ($lambda (((((x . #ignore) . #ignore) . #ignore). #ignore))x))
+	($define! cdaaar ($lambda (((((#ignore . x) . #ignore) . #ignore). #ignore))x))
+	($define! cadaar ($lambda ((((#ignore . (x . #ignore)) . #ignore). #ignore))x))
+	($define! cddaar ($lambda ((((#ignore . (#ignore . x)) . #ignore). #ignore))x))
+	($define! caadar ($lambda (((#ignore . ((x . #ignore) . #ignore)). #ignore))x))
+	($define! cdadar ($lambda (((#ignore . ((#ignore . x) . #ignore)). #ignore))x))
+	($define! caddar ($lambda (((#ignore . (#ignore . (x . #ignore))). #ignore))x))
+	($define! cdddar ($lambda (((#ignore . (#ignore . (#ignore . x))). #ignore))x))
+	($define! caaadr ($lambda ((#ignore .(((x . #ignore) . #ignore) . #ignore)))x))
+	($define! cdaadr ($lambda ((#ignore .(((#ignore . x) . #ignore) . #ignore)))x))
+	($define! cadadr ($lambda ((#ignore .((#ignore . (x . #ignore)) . #ignore)))x))
+	($define! cddadr ($lambda ((#ignore .((#ignore . (#ignore . x)) . #ignore)))x))
+	($define! caaddr ($lambda ((#ignore .(#ignore . ((x . #ignore) . #ignore))))x))
+	($define! cdaddr ($lambda ((#ignore .(#ignore . ((#ignore . x) . #ignore))))x))
+	($define! cadddr ($lambda ((#ignore .(#ignore . (#ignore . (x . #ignore)))))x))
+	($define! cddddr ($lambda ((#ignore .(#ignore . (#ignore . (#ignore . x)))))x))
+	
+	($define! apply
+	   ($lambda (appv arg . opt)
+	      (eval (cons (unwrap appv) arg)
+	            ($if (null? opt)
+	                 (make-environment)
+	                 (car opt)))))
+	
+	($define! $cond
+	   ($vau clauses env
+	
+	      ($define! aux
+	         ($lambda ((test . body) . clauses)
+	            ($if (eval test env)
+	                 (apply (wrap $sequence) body env)
+	                 (apply (wrap $cond) clauses env))))
+	
+	      ($if (null? clauses)
+	           #inert
+	           (apply aux clauses))))
+	
+	($define! $let
+	   ($vau (bindings . body) env
+	      (eval (cons (list* $lambda (map car bindings) body)
+	                  (map cadr bindings))
+	            env)))
+	
+	($define! $set!
+	   ($vau (exp1 formals exp2) env
+	      (eval (list $define! formals
+	                  (list (unwrap eval) exp2 env))
+	            (eval exp1 env))))
+	
+	($define! $provide!
+	   ($vau (symbols . body) env
+	      (eval (list $define! symbols
+	               (list $let ()
+	                  (list* $sequence body)
+	                  (list* list symbols)))
+	            env)))
+	
+	($define! get-current-environment (wrap ($vau () e e)))
+	
+	($define! $let/cc
+	   ($vau (symbol . body) env
+	      (eval (list call/cc (list* $lambda (list symbol) body))
+	            env)))
+	
+	
+	(comment not from kernel report)
+	
+	($define! $quote ($vau (x) #ignore x))
+	
+	($define! map
+	   ($lambda (fun lst)
+	      ($if (null? lst)
+	           ()
+	           (cons (fun (car lst)) (map fun (cdr lst))))))
+	
+	($define! send-message
+	   ($lambda (obj message . args)
+	      ($let ((method (lookup-method obj message)))
+	         (apply method (cons obj args)))))
+	
+	
+	(comment delimited control)
+	
+	($provide! (make-prompt $push-prompt with-sub-cont $push-sub-cont run-cc)
+	
+	($define! prompt-vtable (make-vtable))
+	
+	($define! make-prompt
+	   ($lambda () (make-instance prompt-vtable)))
+	
+	
+	($define! $push-prompt
+	   ($vau (p . es) env
+	      (push-prompt (eval p env)
+	         ($lambda () (eval (list* $sequence es) env)))))
+	
+	($define! $push-sub-cont
+	   ($vau (k . es) env
+	      (push-sub-cont (eval k env)
+	         ($lambda () (eval (list* $sequence es) env)))))
+	
+	
+	($define! abort #inert)
+	($define! mk #inert)
+	
+	($define! local (get-current-environment))
+	
+	
+	($define! push-prompt
+	   ($lambda (p th)
+	      (call/cc
+	         ($lambda (k)
+	            ($set! local mk (push-p p (push-seg k mk)))
+	            (abort th)))))
+	
+	($define! with-sub-cont
+	   ($lambda (p f)
+	      ($let (((subk mk*) (split-seq p mk)))
+	         ($set! local mk mk*)
+	         (call/cc
+	            ($lambda (k)
+	               (abort ($lambda () (f (push-seg k subk)))))))))
+	
+	($define! push-sub-cont
+	   ($lambda (subk th)
+	      (call/cc
+	         ($lambda (k)
+	            ($set! local mk (append-seq subk (push-seg k mk)))
+	            (abort th)))))
+	
+	
+	($define! run-cc
+	   ($lambda (th)
+	      ($set! local mk (empty-seq))
+	      (underflow ((call/cc
+	                     ($lambda (k)
+	                        ($set! local abort k)
+	                        (abort th)))))))
+	
+	($define! underflow
+	   ($lambda (v)
+	      (send-message mk ($quote underflow) v)))
+	
+	
+	(comment implement sequences in terms of object system - ugly)
+	
+	($define! empty-seq-vtable (make-vtable))
+	($define! push-p-vtable (make-vtable))
+	($define! push-seg-vtable (make-vtable))
+	
+	($define! empty-seq
+	   ($lambda ()
+	      (make-instance empty-seq-vtable)))
+	
+	(bind-method! empty-seq-vtable ($quote underflow)
+	   ($lambda (self v)
+	      v))
+	
+	($define! push-p
+	   ($lambda (p mk*)
+	      ($let ((inst (make-instance push-p-vtable)))
+	         (set-slot! inst ($quote p) p)
+	         (set-slot! inst ($quote mk*) mk*)
+	         inst)))
+	
+	(bind-method! push-p-vtable ($quote underflow)
+	   ($lambda (self v)
+	      ($set! local mk (get-slot self ($quote mk*)))
+	      (underflow v)))
+	
+	($define! push-seg
+	   ($lambda (k mk*)
+	      ($let ((inst (make-instance push-seg-vtable)))
+	         (set-slot! inst ($quote k) k)
+	         (set-slot! inst ($quote mk*) mk*)
+	         inst)))
+	
+	(bind-method! push-seg-vtable ($quote underflow)
+	   ($lambda (self v)
+	      ($set! local mk (get-slot self ($quote mk*)))
+	      ((get-slot self ($quote k)) v)))
+	
+	
+	($define! split-seq
+	   ($lambda (p mk)
+	      (send-message mk ($quote do-split-seq) p)))
+	
+	(bind-method! empty-seq-vtable ($quote do-split-seq)
+	   ($lambda (self p)
+	      (error ($quote prompt-not-found))))
+	
+	(bind-method! push-p-vtable ($quote do-split-seq)
+	   ($lambda (self p)
+	      ($let ((p# (get-slot self ($quote p)))
+	             (sk (get-slot self ($quote mk*))))
+	         ($if (eq? p p#)
+	              (list (empty-seq) sk)
+	              ($let (((subk sk#) (split-seq p sk)))
+	                 (list (push-p p# subk) sk#))))))
+	
+	(bind-method! push-seg-vtable ($quote do-split-seq)
+	   ($lambda (self p)
+	      ($let ((seg (get-slot self ($quote k)))
+	             (sk (get-slot self ($quote mk*))))
+	         ($let (((subk sk#) (split-seq p sk)))
+	            (list (push-seg seg subk) sk#)))))
+	
+	
+	($define! append-seq
+	   ($lambda (mk mk*)
+	      (send-message mk ($quote do-append-seq) mk*)))
+	
+	(bind-method! empty-seq-vtable ($quote do-append-seq)
+	   ($lambda (self mk*)
+	      mk*))
+	
+	(bind-method! push-p-vtable ($quote do-append-seq)
+	   ($lambda (self mk*)
+	      ($let ((p (get-slot self ($quote p)))
+	             (sk (get-slot self ($quote mk*))))
+	         (push-p p (append-seq sk mk*)))))
+	
+	(bind-method! push-seg-vtable ($quote do-append-seq)
+	   ($lambda (self mk*)
+	      ($let ((seg (get-slot self ($quote k)))
+	             (sk (get-slot self ($quote mk*))))
+	         (push-seg seg (append-seq sk mk*)))))
+	
+	)
+	
+	(comment end of delimited control)
 
 </pre>
 </body>
